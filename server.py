@@ -11,51 +11,6 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import os
 import torch
 
-UPLOAD_FOLDER = 'files'
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-has_cuda = torch.cuda.is_available()
-device = torch.device('cpu' if not has_cuda else 'cuda')
-
-# Path for our main Svelte page
-@app.route("/")
-def base():
-    return send_from_directory('client/public', 'index.html')
-
-# Path for all the static files (compiled JS/CSS, etc.)
-@app.route("/<path:path>")
-def home(path):
-    return send_from_directory('client/public', path)
-
-
-
-def show_images(batch: torch.Tensor):
-    """ Display a batch of images inline. """
-    scaled = ((batch + 1)*127.5).round().clamp(0,255).to(torch.uint8).cpu()
-    reshaped = scaled.permute(2, 0, 3, 1).reshape([batch.shape[2], -1, 3])
-    im = Image.fromarray(reshaped.numpy())
-    im.save(f"client/public/images/out.png")
-    return im
-
-
-def text_summary(text):
-    
-    model_name = "snrspeaks/t5-one-line-summary"
-
-    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    input_ids = tokenizer.encode("summarize: " + text, return_tensors="pt", add_special_tokens=True)
-    generated_ids = model.generate(input_ids=input_ids,num_beams=5,max_length=50,repetition_penalty=2.5,length_penalty=1,early_stopping=True,num_return_sequences=1)
-    preds = [tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=True) for g in generated_ids]
-
-    one_line_sum = preds[0]
-    print(one_line_sum)
-    del model
-    torch.cuda.empty_cache()
-    imagize(one_line_sum)
-    return one_line_sum
-
-
 def imagize(one_line_sum):
     # Create base model.
     options = model_and_diffusion_defaults()
@@ -185,6 +140,62 @@ def imagize(one_line_sum):
 
     # Show the output
     show_images(up_samples)
+
+
+def text_summary(text):
+    
+    model_name = "snrspeaks/t5-one-line-summary"
+
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    input_ids = tokenizer.encode("summarize: " + text, return_tensors="pt", add_special_tokens=True)
+    generated_ids = model.generate(input_ids=input_ids,num_beams=5,max_length=50,repetition_penalty=2.5,length_penalty=1,early_stopping=True,num_return_sequences=1)
+    preds = [tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=True) for g in generated_ids]
+
+    one_line_sum = preds[0]
+    print(one_line_sum)
+    del model
+    torch.cuda.empty_cache()
+    imagize(one_line_sum)
+    return one_line_sum
+
+
+
+
+UPLOAD_FOLDER = 'files'
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+has_cuda = torch.cuda.is_available()
+device = torch.device('cpu' if not has_cuda else 'cuda')
+
+
+
+#empty run so first request wouldn't time out downloading models
+text_summary('empty run')
+imagize('empty run')
+
+
+# Path for our main Svelte page
+@app.route("/")
+def base():
+    return send_from_directory('client/public', 'index.html')
+
+# Path for all the static files (compiled JS/CSS, etc.)
+@app.route("/<path:path>")
+def home(path):
+    return send_from_directory('client/public', path)
+
+
+
+def show_images(batch: torch.Tensor):
+    """ Display a batch of images inline. """
+    scaled = ((batch + 1)*127.5).round().clamp(0,255).to(torch.uint8).cpu()
+    reshaped = scaled.permute(2, 0, 3, 1).reshape([batch.shape[2], -1, 3])
+    im = Image.fromarray(reshaped.numpy())
+    im.save(f"client/public/images/out.png")
+    return im
+
+
 
 
 
