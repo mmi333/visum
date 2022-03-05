@@ -1,0 +1,8 @@
+client/.DS_Store
+client/node_modules
+client/public/bundle.*
+out*
+t.txt
+Untitled.ipynb
+.ipynb_checkpoints/Untitled-checkpoint.ipynb
+glide_model_cache/*
