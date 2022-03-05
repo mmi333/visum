@@ -169,10 +169,10 @@ has_cuda = torch.cuda.is_available()
 device = torch.device('cpu' if not has_cuda else 'cuda')
 
 
-
-#empty run so first request wouldn't time out downloading models
-text_summary('empty run')
-imagize('empty run')
+if not os.path.exists("./glide_model_cache"):
+    #empty run so first request wouldn't time out downloading models
+    text_summary('empty run')
+    imagize('empty run')
 
 
 # Path for our main Svelte page
