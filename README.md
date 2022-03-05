@@ -19,3 +19,7 @@ snrspeaks/t5-one-line-summary from huggingface is used for summarizing the parag
 
 glide_text2im is used to convert the line into an image.
 
+Another Note: It may very well not work on your machine because of one of many little details (CUDA version, etc.)
+
+while I admit it should at least be dockerized, I don't know how to do that yet so to run it you may have to do some hacks.
+
