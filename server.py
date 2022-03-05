@@ -1,7 +1,4 @@
-import os
-from flask import Flask, flash, request, redirect, url_for, send_from_directory, make_response
-from werkzeug.utils import secure_filename
-from tika import parser # pip install tika
+from flask import Flask, request, send_from_directory
 from PIL import Image
 
 from glide_text2im.download import load_checkpoint
@@ -11,15 +8,10 @@ from glide_text2im.model_creation import (
     model_and_diffusion_defaults_upsampler
 )
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-import re
 import os
-import argparse
 import torch
-import random
 
 UPLOAD_FOLDER = 'files'
-ALLOWED_EXTENSIONS = {'pdf'}
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 has_cuda = torch.cuda.is_available()
