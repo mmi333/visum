@@ -1,10 +1,9 @@
-# Svelte.js + Flask
+Quick project for a hackathon. 
 
-A super simple example of using Flask to serve a Svelte app and use it as a backend server.
+Give it a paragraph from a blog post and it will (try) to make you a (weird but interesting) 256x256 image fitting the paragraph. 
 
-Run the following for development:
 
-- `python server.py` to start the Flask server.
-- `cd client; npm install; npm run autobuild` to automatically build and reload the Svelte frontend when it's changed.
-
-This example just queries the Flask server for a random number.
+1- Clone the repo
+2- pip install -r requirements.txt
+3- python3 server.py
+4- Give it a paragraph and wait a minute
